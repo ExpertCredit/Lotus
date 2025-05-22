@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Вход</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      width: 320px;
+      text-align: center;
+      animation: fadeInUp 1s ease;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 500;
+      font-size: 24px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.02);
+    }
+
+    button {
+      background: rgba(30, 144, 255, 0.8);
+      color: white;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    button:hover {
+      background: rgba(28, 134, 238, 0.9);
+      transform: scale(1.02);
+    }
+
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      font-size: 14px;
+      animation: shake 0.3s;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<div class="login-container">
+	<img src="logo.png" alt="Логотип" style="width: 180px; margin-bottom: 20px;" />
+	
+  <h2>Вход в систему</h2>
+  <input type="text" id="u" placeholder="Логин" />
+  <input type="password" id="p" placeholder="Пароль" />
+  <button onclick="l()">Войти</button>
+  <div class="error" id="e"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script>
+  particlesJS("particles-js", {
+    particles: {
+      number: { value: 40 },
+      color: { value: "#ffffff" },
+      shape: { type: "circle" },
+      opacity: { value: 0.4 },
+      size: { value: 3 },
+      move: { enable: true, speed: 1.5 }
+    }
+  });
+
+  const a = {
+    "admin":   { h: "6a6ac8386005b00f2af86a300f1ae811527b9d979db505e11ae7c5b85fa679c3", r: "admin.html" },
+    "user":   { h: "8b317b0c50ee0926c73cc837c5892d7229648ff9e55d2c5608ce081dde377ee6", r: "user1.html" },
+    "manager": { h: "8b317b0c50ee0926c73cc837c5892d7229648ff9e55d2c5608ce081dde377ee6", r: "manager.html" },
+    "client":  { h: "3f230640b78d7e71ac5514e57935eb69b665fb692e8b99f9b45d4fca984babfa", r: "client.html" }
+  };
+
+  async function h(t) {
+    const b = new TextEncoder().encode(t);
+    const d = await crypto.subtle.digest("SHA-256", b);
+    return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function l() {
+    const u = document.getElementById("u").value.trim();
+    const p = document.getElementById("p").value.trim();
+    const e = document.getElementById("e");
+    if (!a[u]) { e.textContent = "Неверный логин или пароль!"; return; }
+    const x = await h(p);
+    if (x === a[u].h) {
+      const msg = document.createElement("div");
+      msg.textContent = "✅ Вход выполнен!";
+      msg.style = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;padding:10px 20px;color:#fff;border-radius:8px;font-size:18px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:1000;";
+      document.body.appendChild(msg);
+      setTimeout(() => { location.href = a[u].r; }, 1000);
+    } else {
+      e.textContent = "Неверный логин или пароль!";
+    }
+  }
+  // (текущий код выше не трогаем)
+
+  // Обработка клавиши Enter
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      l();
+    }
+  });
+</script>
+  
+
+</body>
+</html>
