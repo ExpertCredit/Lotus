@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<script>
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "login.html";
-  }
-</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Expert Credit</title>
@@ -563,20 +558,12 @@
 				    margin-right: auto; /* Размещаем слева от других кнопок */
 				}
   </style>
-  <script>
-    // Функция для открытия ссылки с запросом пароля
-    function openLink(url) {
-      let password = prompt("Введите пароль:");
-      let correctPassword = "1234"; // Замените на свой пароль
-
-      if (password === correctPassword) {
-        window.open(url, "_blank"); // Открывает в новой вкладке
-      } else {
-        alert("Неверный пароль! Доступ запрещён.");
-      }
-      return false; // Блокирует переход по ссылке
-    }
-  </script>
+ <script>
+  if (localStorage.getItem("loggedIn") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+	
 </head>
 <body>
   <!-- Сайдбар с навигацией -->
