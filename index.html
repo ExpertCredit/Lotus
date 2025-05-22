@@ -82,11 +82,11 @@
 </div>
 
 <script>
-  // Пользователи и хэши SHA-256 от паролей
+  // Словарь пользователей с SHA-256 паролей и страницами
   const users = {
     "admin":   { hash: "6a6ac8386005b00f2af86a300f1ae811527b9d979db505e11ae7c5b85fa679c3", page: "dashboard.html" },
-    "user":    { hash: "4567".split('').reverse().join('').padStart(64, '0'), page: "main.html" },
-    "manager": { hash: "Expert".split('').reverse().join('').padStart(64, '0'), page: "main.html" },
+    "user":    { hash: "2aaf6aa50ca0c8e3502ff19c6b85dd09878d27bcd4e1e24827146f5f3a56a0ea", page: "main.html" },
+    "manager": { hash: "23864a6a19b9c49ae7038d0c6ec3a2dc63c4e32d6e7f6d5c3b8f0ab17e774924", page: "main.html" },
     "client":  { hash: "3f230640b78d7e71ac5514e57935eb69b665fb692e8b99f9b45d4fca984babfa", page: "client.html" }
   };
 
@@ -104,6 +104,7 @@
     const errorBox = document.getElementById("e");
 
     if (!users[username]) {
+      errorBox.style.color = "#ff6b6b";
       errorBox.textContent = "Неверный логин или пароль!";
       return;
     }
