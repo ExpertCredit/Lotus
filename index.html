@@ -115,16 +115,20 @@
 <div id="particles-js"></div>
 
 <div class="login-container">
-	<img src="logo-default-480x80.png" alt="Логотип" style="width: 180px; margin-bottom: 20px;" />
-	
-  <h2>Вход в систему</h2>
+  <img src="logo-default-480x80.png" alt="Логотип" style="width: 180px; margin-bottom: 20px;" />
+  <h2>Вход В Систему</h2>
   <input type="text" id="u" placeholder="Логин" />
   <input type="password" id="p" placeholder="Пароль" />
   <button onclick="l()">Войти</button>
   <div class="error" id="e"></div>
 </div>
 
+<!-- Библиотека sha256 -->
+<script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js"></script>
+
+<!-- Particles -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
 <script>
   particlesJS("particles-js", {
     particles: {
@@ -139,23 +143,26 @@
 
   const a = {
     "admin":   { h: "6a6ac8386005b00f2af86a300f1ae811527b9d979db505e11ae7c5b85fa679c3", r: "dashboard.html" },
-    "user":   { h: "ceaa28bba4caba687dc31b1bbe79eca3c70c33f871f1ce8f528cf9ab5cfd76dd", r: "main.html" },
+    "user":    { h: "ceaa28bba4caba687dc31b1bbe79eca3c70c33f871f1ce8f528cf9ab5cfd76dd", r: "main.html" },
     "manager": { h: "8b317b0c50ee0926c73cc837c5892d7229648ff9e55d2c5608ce081dde377ee6", r: "main.html" },
     "client":  { h: "3f230640b78d7e71ac5514e57935eb69b665fb692e8b99f9b45d4fca984babfa", r: "client.html" }
   };
 
-  async function h(t) {
-    const b = new TextEncoder().encode(t);
-    const d = await crypto.subtle.digest("SHA-256", b);
-    return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+  function h(t) {
+    return sha256(t); // Библиотека js-sha256
   }
 
-  async function l() {
+  function l() {
     const u = document.getElementById("u").value.trim();
     const p = document.getElementById("p").value.trim();
     const e = document.getElementById("e");
-    if (!a[u]) { e.textContent = "Неверный логин или пароль!"; return; }
-    const x = await h(p);
+
+    if (!a[u]) {
+      e.textContent = "Неверный логин или пароль!";
+      return;
+    }
+
+    const x = h(p);
     if (x === a[u].h) {
       const msg = document.createElement("div");
       msg.textContent = "✅ Вход выполнен!";
@@ -166,16 +173,13 @@
       e.textContent = "Неверный логин или пароль!";
     }
   }
-  // (текущий код выше не трогаем)
 
-  // Обработка клавиши Enter
   document.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
       l();
     }
   });
 </script>
-  
 
 </body>
 </html>
