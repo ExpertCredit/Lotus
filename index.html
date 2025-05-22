@@ -16,15 +16,6 @@
       overflow: hidden;
     }
 
-    #particles-js {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
     .login-container {
       background: rgba(255, 255, 255, 0.07);
       backdrop-filter: blur(25px) saturate(180%);
@@ -34,7 +25,6 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       width: 320px;
       text-align: center;
-      animation: fadeInUp 1s ease;
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
@@ -43,7 +33,6 @@
       margin-bottom: 25px;
       font-weight: 500;
       font-size: 24px;
-      animation: fadeIn 1s ease-in-out;
     }
 
     input, button {
@@ -68,11 +57,6 @@
       color: rgba(255, 255, 255, 0.6);
     }
 
-    input:focus {
-      background: rgba(255, 255, 255, 0.25);
-      transform: scale(1.02);
-    }
-
     button {
       background: rgba(30, 144, 255, 0.8);
       color: white;
@@ -80,101 +64,68 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    button:hover {
-      background: rgba(28, 134, 238, 0.9);
-      transform: scale(1.02);
-    }
-
     .error {
       color: #ff6b6b;
       margin-top: 10px;
       font-size: 14px;
-      animation: shake 0.3s;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
     }
   </style>
 </head>
 <body>
 
-<div id="particles-js"></div>
-
 <div class="login-container">
-  <img src="logo-default-480x80.png" alt="Логотип" style="width: 180px; margin-bottom: 20px;" />
   <h2>Вход в систему</h2>
   <input type="text" id="u" placeholder="Логин" />
   <input type="password" id="p" placeholder="Пароль" />
-  <button onclick="l()">Войти</button>
+  <button onclick="login()">Войти</button>
   <div class="error" id="e"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
 <script>
-  particlesJS("particles-js", {
-    particles: {
-      number: { value: 40 },
-      color: { value: "#ffffff" },
-      shape: { type: "circle" },
-      opacity: { value: 0.4 },
-      size: { value: 3 },
-      move: { enable: true, speed: 1.5 }
-    }
-  });
-
-  // Обновлённый список пользователей с SHA-256 хэшами
-  const a = {
-    "admin":   { h: "6a6ac8386005b00f2af86a300f1ae811527b9d979db505e11ae7c5b85fa679c3", r: "dashboard.html" }, // 1234
-    "user":    { h: "86e23714dbbf2ab33f8cc086b03c04b3e1d1089dc5b831c8ddba8a8c651500a6", r: "main.html" },     // 4567
-    "manager": { h: "8b317b0c50ee0926c73cc837c5892d7229648ff9e55d2c5608ce081dde377ee6", r: "home.html" },     // Expert
-    "client":  { h: "3f230640b78d7e71ac5514e57935eb69b665fb692e8b99f9b45d4fca984babfa", r: "client.html" }    // 1111
+  // Пользователи и хэши SHA-256 от паролей
+  const users = {
+    "admin":   { hash: "6a6ac8386005b00f2af86a300f1ae811527b9d979db505e11ae7c5b85fa679c3", page: "dashboard.html" },
+    "user":    { hash: "4567".split('').reverse().join('').padStart(64, '0'), page: "main.html" },
+    "manager": { hash: "Expert".split('').reverse().join('').padStart(64, '0'), page: "main.html" },
+    "client":  { hash: "3f230640b78d7e71ac5514e57935eb69b665fb692e8b99f9b45d4fca984babfa", page: "client.html" }
   };
 
-  async function h(t) {
-    const b = new TextEncoder().encode(t);
-    const d = await crypto.subtle.digest("SHA-256", b);
-    return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+  async function sha256(text) {
+    const msgBuffer = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    return Array.from(new Uint8Array(hashBuffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
   }
 
-  async function l() {
-    const u = document.getElementById("u").value.trim();
-    const p = document.getElementById("p").value.trim();
-    const e = document.getElementById("e");
-    e.textContent = "";
-    if (!a[u]) {
-      e.textContent = "Неверный логин или пароль!";
+  async function login() {
+    const username = document.getElementById("u").value.trim();
+    const password = document.getElementById("p").value.trim();
+    const errorBox = document.getElementById("e");
+
+    if (!users[username]) {
+      errorBox.textContent = "Неверный логин или пароль!";
       return;
     }
-    const x = await h(p);
-    if (x === a[u].h) {
-      const msg = document.createElement("div");
-      msg.textContent = "✅ Вход выполнен!";
-      msg.style = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2ecc71;padding:10px 20px;color:#fff;border-radius:8px;font-size:18px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:1000;";
-      document.body.appendChild(msg);
-      setTimeout(() => { location.href = a[u].r; }, 1000);
+
+    const inputHash = await sha256(password);
+    if (inputHash === users[username].hash) {
+      errorBox.style.color = "#2ecc71";
+      errorBox.textContent = "✅ Вход выполнен!";
+
+      setTimeout(() => {
+        window.location.href = users[username].page;
+      }, 800);
     } else {
-      e.textContent = "Неверный логин или пароль!";
+      errorBox.style.color = "#ff6b6b";
+      errorBox.textContent = "Неверный логин или пароль!";
     }
   }
 
-  // Поддержка Enter
+  // Обработка Enter
   document.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
-      l();
+      login();
     }
   });
 </script>
